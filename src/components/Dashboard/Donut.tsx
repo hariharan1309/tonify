@@ -1,6 +1,8 @@
-'use client'
+'use client';
 import React, { useEffect, useRef, useState } from 'react';
-import ApexCharts from 'apexcharts';
+import dynamic from 'next/dynamic'; // Import dynamic from Next.js
+
+const ApexCharts = dynamic(() => import('react-apexcharts'), { ssr: false }); // Use dynamic import with ssr: false
 
 const getChartOptions = () => ({
   series: [350, 80, 200, 54],
@@ -30,8 +32,8 @@ const getChartOptions = () => ({
             label: "Total Revenue",
             color:'#60A5FA',
             fontWeight:'450',
-            formatter: function (w: { globals: { seriesTotals: any[]; }; }) {
-              const sum = w.globals.seriesTotals.reduce((a: number, b: number) => a + b, 0);
+            formatter: function (w) {
+              const sum = w.globals.seriesTotals.reduce((a, b) => a + b, 0);
               return sum + '$';
             },
           },
@@ -39,7 +41,7 @@ const getChartOptions = () => ({
             show: true,
             fontFamily: "Inter, sans-serif",
             offsetY: -20,
-            formatter: function (value: number) {
+            formatter: function (value) {
               return value + "$";
             },
           },
@@ -70,14 +72,14 @@ const getChartOptions = () => ({
   },
   yaxis: {
     labels: {
-      formatter: function (value: number) {
+      formatter: function (value) {
         return value + "$";
       },
     },
   },
   xaxis: {
     labels: {
-      formatter: function (value: number) {
+      formatter: function (value) {
         return value + "$";
       },
     },
@@ -90,21 +92,9 @@ const getChartOptions = () => ({
   },
 });
 
-const Donut: React.FC = () => {
+const Donut = () => {
   const [chartOptions, setChartOptions] = useState(getChartOptions());
-  const chartRef = useRef<ApexCharts | null>(null);
 
-  useEffect(() => {
-    const chart = new ApexCharts(document.getElementById('donut-chart'), chartOptions);
-    chart.render();
-    chartRef.current = chart;
-
-    return () => {
-      if (chartRef.current) {
-        chartRef.current.destroy();
-      }
-    };
-  }, [chartOptions]);
   return (
     <div className="max-w-md bg-gray-50 ring-1 ring-gray-200 rounded-lg shadow-md dark:bg-gray-800 p-4 md:p-6">
       <div className="flex justify-between mb-3">
@@ -112,8 +102,7 @@ const Donut: React.FC = () => {
           <h5 className="text-xl font-semibold leading-none text-gray-800 dark:text-white pe-1">Category Breakdown</h5>
         </div>
       </div>
-        <div id="donut-chart">
-      </div>
+      <ApexCharts options={chartOptions} series={chartOptions.series} type="donut" height={400} />
     </div>
   );
 };
