@@ -32,7 +32,7 @@ const getChartOptions = () => ({
             label: "Total Revenue",
             color:'#60A5FA',
             fontWeight:'450',
-            formatter: function (w) {
+            formatter: function (w: any) {
               const sum = w.globals.seriesTotals.reduce((a, b) => a + b, 0);
               return sum + '$';
             },
